@@ -1,4 +1,4 @@
-name: Build Single Popular App
+name: Build Rushiwowen
 
 env:
   NODE_VERSION: "22"
@@ -10,41 +10,101 @@ on:
       name:
         description: "App Name"
         required: true
-        default: "twitter"
+        default: "rushiwowen"
       title:
         description: "App Title"
         required: true
-        default: "Twitter"
+        default: "如是我闻"
       name_zh:
         description: "App Name in Chinese"
         required: true
-        default: "推特"
+        default: "如是我闻"
       url:
         description: "App URL"
         required: true
-        default: "https://twitter.com/"
+        default: "https://rushiwowen.co/"
+      width:
+        description: "Window width"
+        required: false
+        type: string
+        default: "1200"
+      height:
+        description: "Window height"
+        required: false
+        type: string
+        default: "800"
+      hide_title_bar:
+        description: "Hide title bar (macOS only)"
+        required: false
+        type: boolean
+        default: false
+      show_system_tray:
+        description: "Show system tray icon"
+        required: false
+        type: boolean
+        default: true
+      force_internal_navigation:
+        description: "Keep all navigation inside app window"
+        required: false
+        type: boolean
+        default: true
+      icon:
+        description: "Custom icon URL"
+        required: false
+        type: string
+        default: "https://rushiwowen.co/images/buddha.png"
   workflow_call:
     inputs:
       name:
         description: "App Name"
         type: string
         required: true
-        default: "twitter"
+        default: "rushiwowen"
       title:
         description: "App Title"
         required: true
         type: string
-        default: "Twitter"
+        default: "如是我闻"
       name_zh:
         description: "App Name in Chinese"
         required: true
         type: string
-        default: "推特"
+        default: "如是我闻"
       url:
         description: "App URL"
         required: true
         type: string
-        default: "https://twitter.com/"
+        default: "https://rushiwowen.co/"
+      width:
+        description: "Window width"
+        required: false
+        type: string
+        default: "1200"
+      height:
+        description: "Window height"
+        required: false
+        type: string
+        default: "800"
+      hide_title_bar:
+        description: "Hide title bar (macOS only)"
+        required: false
+        type: boolean
+        default: false
+      show_system_tray:
+        description: "Show system tray icon"
+        required: false
+        type: boolean
+        default: true
+      force_internal_navigation:
+        description: "Keep all navigation inside app window"
+        required: false
+        type: boolean
+        default: true
+      icon:
+        description: "Custom icon URL"
+        required: false
+        type: string
+        default: "https://rushiwowen.co/images/buddha.png"
 
 jobs:
   build:
@@ -96,6 +156,12 @@ jobs:
           TITLE: ${{ inputs.title }}
           NAME_ZH: ${{ inputs.name_zh }}
           URL: ${{ inputs.url }}
+          WIDTH: ${{ inputs.width }}
+          HEIGHT: ${{ inputs.height }}
+          HIDE_TITLE_BAR: ${{ inputs.hide_title_bar }}
+          SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray }}
+          FORCE_INTERNAL_NAVIGATION: ${{ inputs.force_internal_navigation }}
+          ICON: ${{ inputs.icon }}
         run: pnpm run build:config
 
       - name: Build for Linux
