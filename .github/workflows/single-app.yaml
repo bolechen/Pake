@@ -1,107 +1,107 @@
 name: Build Rushiwowen
 
-env:
-  NODE_VERSION: "22"
-  PNPM_VERSION: "10.15.0"
-
 on:
+  push:
+    branches:
+      - main
+      - master
   workflow_dispatch:
     inputs:
       name:
-        description: "App Name"
+        description: "应用英文名（内部使用，建议小写字母）"
         required: true
         default: "rushiwowen"
       title:
-        description: "App Title"
+        description: "应用标题（显示名称，支持中文）"
         required: true
         default: "如是我闻"
       name_zh:
-        description: "App Name in Chinese"
+        description: "应用中文名（用于 Linux 菜单等）"
         required: true
         default: "如是我闻"
       url:
-        description: "App URL"
+        description: "应用地址 URL"
         required: true
         default: "https://rushiwowen.co/"
       width:
-        description: "Window width"
+        description: "窗口宽度"
         required: false
         type: string
         default: "1200"
       height:
-        description: "Window height"
+        description: "窗口高度"
         required: false
         type: string
         default: "800"
       hide_title_bar:
-        description: "Hide title bar (macOS only)"
+        description: "隐藏标题栏（仅 macOS，有刘海屏可选）"
         required: false
         type: boolean
         default: false
       show_system_tray:
-        description: "Show system tray icon"
+        description: "显示系统托盘图标"
         required: false
         type: boolean
-        default: true
+        default: false
       force_internal_navigation:
-        description: "Keep all navigation inside app window"
+        description: "所有页面跳转都在应用内打开"
         required: false
         type: boolean
         default: true
       icon:
-        description: "Custom icon URL"
+        description: "自定义图标 URL（PNG，推荐 512×512）"
         required: false
         type: string
         default: "https://rushiwowen.co/images/buddha.png"
   workflow_call:
     inputs:
       name:
-        description: "App Name"
+        description: "应用英文名（内部使用，建议小写字母）"
         type: string
         required: true
         default: "rushiwowen"
       title:
-        description: "App Title"
+        description: "应用标题（显示名称，支持中文）"
         required: true
         type: string
         default: "如是我闻"
       name_zh:
-        description: "App Name in Chinese"
+        description: "应用中文名（用于 Linux 菜单等）"
         required: true
         type: string
         default: "如是我闻"
       url:
-        description: "App URL"
+        description: "应用地址 URL"
         required: true
         type: string
         default: "https://rushiwowen.co/"
       width:
-        description: "Window width"
+        description: "窗口宽度"
         required: false
         type: string
         default: "1200"
       height:
-        description: "Window height"
+        description: "窗口高度"
         required: false
         type: string
         default: "800"
       hide_title_bar:
-        description: "Hide title bar (macOS only)"
+        description: "隐藏标题栏（仅 macOS，有刘海屏可选）"
         required: false
         type: boolean
         default: false
       show_system_tray:
-        description: "Show system tray icon"
+        description: "显示系统托盘图标"
         required: false
         type: boolean
-        default: true
+        default: false
       force_internal_navigation:
-        description: "Keep all navigation inside app window"
+        description: "所有页面跳转都在应用内打开"
         required: false
         type: boolean
         default: true
       icon:
-        description: "Custom icon URL"
+        description: "自定义图标 URL（PNG，推荐 512×512）"
         required: false
         type: string
         default: "https://rushiwowen.co/images/buddha.png"
@@ -162,6 +162,8 @@ jobs:
           SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray }}
           FORCE_INTERNAL_NAVIGATION: ${{ inputs.force_internal_navigation }}
           ICON: ${{ inputs.icon }}
+          # macOS 默认全屏启动，其它平台保持窗口模式
+          FULLSCREEN: ${{ matrix.os == 'macos-latest' && 'true' || 'false' }}
         run: pnpm run build:config
 
       - name: Build for Linux

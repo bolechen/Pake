@@ -8,6 +8,7 @@ import { writeFileSync, existsSync, copyFileSync, mkdirSync } from "fs";
 import { join } from "path";
 import os from "os";
 import sharp from "sharp";
+import icongen from "icon-gen";
 
 // Try to import axios, but handle gracefully if it fails
 let axios;
@@ -95,14 +96,14 @@ Type=Application
 
     win32: {
       configFile: "src-tauri/tauri.windows.conf.json",
-      // Use shared Windows icons to ensure they are valid ICO files.
-      // Per-app icons are handled via PNG/tray elsewhere.
-      iconPath: "src-tauri/png/icon_32.ico",
-      hdIconPath: "src-tauri/png/icon_256.ico",
-      defaultIcon: "src-tauri/png/icon_32.ico",
+      // Windows uses a generated multi-size ICO derived from a 512x512 PNG.
+      // This mirrors the CLI behavior to ensure RC.EXE receives a valid ICO.
+      iconPath: `src-tauri/png/${process.env.NAME}_256.ico`,
+      hdIconPath: `src-tauri/png/${process.env.NAME}_256.ico`,
+      defaultIcon: "src-tauri/png/icon_256.ico",
       hdDefaultIcon: "src-tauri/png/icon_256.ico",
-      icons: ["png/icon_256.ico", "png/icon_32.ico"],
-      resources: ["png/icon_32.ico"],
+      icons: [`png/${process.env.NAME}_256.ico`],
+      resources: [`png/${process.env.NAME}_256.ico`],
     },
   },
 };
@@ -135,6 +136,11 @@ function updateBaseConfigs() {
     const height = parseInt(process.env.HEIGHT);
     pakeJson.windows[0].height = height;
     console.log(`Set window height to: ${height}`);
+  }
+  if (process.env.FULLSCREEN) {
+    const fullscreen = process.env.FULLSCREEN === "true";
+    pakeJson.windows[0].fullscreen = fullscreen;
+    console.log(`Set fullscreen to: ${fullscreen}`);
   }
   if (process.env.HIDE_TITLE_BAR) {
     const hideTitleBar = process.env.HIDE_TITLE_BAR === "true";
@@ -442,44 +448,33 @@ const platformHandlers = {
   },
 
   win32: async (config) => {
-    // Ensure basic Windows icons exist
-    await ensureIconExists(config.iconPath, config.defaultIcon, "Windows icon");
+    // Ensure a base 512x512 PNG exists for this app
+    const basePngPath = `src-tauri/png/${process.env.NAME}_512.png`;
     await ensureIconExists(
-      config.hdIconPath,
-      config.hdDefaultIcon,
-      "Windows HD icon",
+      basePngPath,
+      "src-tauri/png/icon_512.png",
+      "Windows base icon PNG",
+      true,
     );
 
-    // Generate additional Windows icon sizes if needed
-    const windowsIcons = [
-      { path: config.iconPath, size: 32 },
-      { path: config.hdIconPath, size: 256 },
-    ];
-
-    for (const icon of windowsIcons) {
-      if (existsSync(icon.path)) {
-        // Generate additional sizes from the main icon
-        const additionalSizes = [16, 48, 128];
-        for (const size of additionalSizes) {
-          const sizeIconPath = icon.path.replace(/32|256/, size.toString());
-          if (!existsSync(sizeIconPath)) {
-            try {
-              console.log(`Generating Windows icon size ${size}x${size}`);
-              const buffer = await sharp(icon.path)
-                .resize(size, size, {
-                  fit: "contain",
-                  background: { r: 0, g: 0, b: 0, alpha: 0 },
-                })
-                .png({ compressionLevel: 9 })
-                .toBuffer();
-              writeFileSync(sizeIconPath, buffer);
-              console.log(`Generated Windows icon: ${sizeIconPath}`);
-            } catch (error) {
-              console.warn(
-                `Failed to generate ${size}x${size} icon: ${error.message}`,
-              );
-            }
-          }
+    // Generate a multi-size ICO from the base PNG using icon-gen
+    if (!existsSync(config.iconPath)) {
+      try {
+        console.log(
+          `Generating Windows ICO from ${basePngPath} -> ${config.iconPath}`,
+        );
+        await icongen(basePngPath, "src-tauri/png", {
+          report: false,
+          ico: {
+            name: `${process.env.NAME}_256`,
+            sizes: [16, 32, 48, 64, 128, 256],
+          },
+        });
+      } catch (error) {
+        console.warn(`Failed to generate Windows ICO: ${error.message}`);
+        if (existsSync(config.defaultIcon)) {
+          console.warn("Falling back to default Windows icon");
+          copyFileSync(config.defaultIcon, config.iconPath);
         }
       }
     }

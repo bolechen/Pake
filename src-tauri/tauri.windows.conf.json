@@ -7,7 +7,7 @@
     "windows": {
       "digestAlgorithm": "sha256",
       "wix": {
-        "language": ["en-US"],
+        "language": ["zh-CN"],
         "template": "assets/main.wxs"
       }
     }
