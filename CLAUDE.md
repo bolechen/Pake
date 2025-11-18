@@ -128,12 +128,14 @@ pnpm run format:check    # Check formatting without fixing
 ## Architecture Patterns
 
 **Hybrid TypeScript/Rust Architecture:**
+
 - **CLI Layer**: TypeScript provides user-friendly command interface with argument parsing
 - **Tauri Backend**: Rust handles performance-critical desktop operations
 - **WebView Integration**: Uses system webview for rendering web content
 - **Configuration Pipeline**: Environment variables → config files → runtime configuration
 
 **Key Design Decisions:**
+
 - Hot reload coordination between CLI development and Tauri app
 - Platform-specific builders with unified CLI interface
 - Dynamic configuration generation based on environment variables

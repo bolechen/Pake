@@ -1,11 +1,11 @@
 {
-  "productName": "Weekly",
-  "identifier": "com.pake.weekly",
+  "productName": "如是闻",
+  "identifier": "com.pake.rushiwowen",
   "version": "1.0.0",
   "app": {
     "withGlobalTauri": true,
     "trayIcon": {
-      "iconPath": "png/weekly_512.png",
+      "iconPath": "png/rushiwowen_512.png",
       "iconAsTemplate": false,
       "id": "pake-tray"
     },

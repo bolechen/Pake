@@ -1,7 +1,9 @@
 {
   "bundle": {
-    "icon": ["icons/weekly.icns"],
+    "icon": ["icons/rushiwowen.icns"],
     "active": true,
     "targets": ["dmg"]
-  }
+  },
+  "identifier": "com.pake.rushiwowen",
+  "productName": "如是闻"
 }
