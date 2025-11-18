@@ -152,16 +152,17 @@ jobs:
 
       - name: Config App
         env:
-          NAME: ${{ inputs.name }}
-          TITLE: ${{ inputs.title }}
-          NAME_ZH: ${{ inputs.name_zh }}
-          URL: ${{ inputs.url }}
-          WIDTH: ${{ inputs.width }}
-          HEIGHT: ${{ inputs.height }}
-          HIDE_TITLE_BAR: ${{ inputs.hide_title_bar }}
-          SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray }}
-          FORCE_INTERNAL_NAVIGATION: ${{ inputs.force_internal_navigation }}
-          ICON: ${{ inputs.icon }}
+          # 在 push 触发时 inputs 为空，这里用 || 提供安全默认值
+          NAME: ${{ inputs.name || 'rushiwowen' }}
+          TITLE: ${{ inputs.title || '如是我闻' }}
+          NAME_ZH: ${{ inputs.name_zh || '如是我闻' }}
+          URL: ${{ inputs.url || 'https://rushiwowen.co/' }}
+          WIDTH: ${{ inputs.width || '1200' }}
+          HEIGHT: ${{ inputs.height || '800' }}
+          HIDE_TITLE_BAR: ${{ inputs.hide_title_bar || false }}
+          SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray || false }}
+          FORCE_INTERNAL_NAVIGATION: ${{ inputs.force_internal_navigation || true }}
+          ICON: ${{ inputs.icon || 'https://rushiwowen.co/images/buddha.png' }}
           # macOS 默认全屏启动，其它平台保持窗口模式
           FULLSCREEN: ${{ matrix.os == 'macos-latest' && 'true' || 'false' }}
         run: pnpm run build:config
