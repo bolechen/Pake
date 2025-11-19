@@ -174,8 +174,8 @@ jobs:
           pnpm run tauri build
           mkdir -p output/linux
           # Use ASCII filename to avoid potential issues with Chinese characters
-          mv src-tauri/target/release/bundle/deb/*.deb output/linux/${{inputs.name}}_`arch`.deb
-          mv src-tauri/target/release/bundle/appimage/*.AppImage output/linux/"${{inputs.name}}"_`arch`.AppImage
+          mv src-tauri/target/release/bundle/deb/*.deb output/linux/${{ inputs.name || 'rushiwowen' }}_`arch`.deb
+          mv src-tauri/target/release/bundle/appimage/*.AppImage output/linux/"${{ inputs.name || 'rushiwowen' }}"_`arch`.AppImage
 
       - name: Build for macOS
         if: matrix.os == 'macos-latest'
@@ -192,7 +192,7 @@ jobs:
             find src-tauri/target -maxdepth 5 -type f -name '*.dmg' || true
             exit 1
           fi
-          mv "$dmg_path" output/macos/"${{inputs.name}}".dmg
+          mv "$dmg_path" output/macos/"${{ inputs.name || 'rushiwowen' }}".dmg
 
       - name: Build for Windows
         if: matrix.os == 'windows-latest'
@@ -203,7 +203,7 @@ jobs:
           $msiFiles = Get-ChildItem -Path "src-tauri\target" -Recurse -Filter "*.msi" -ErrorAction SilentlyContinue
           if ($msiFiles) {
             # Use ASCII filename to avoid potential issues with Chinese characters
-            Move-Item -Path $msiFiles[0].FullName -Destination "output\windows\${{inputs.name}}_x64.msi"
+            Move-Item -Path $msiFiles[0].FullName -Destination "output\windows\${{ inputs.name || 'rushiwowen' }}_x64.msi"
           } else {
             Write-Error "No MSI files found under: src-tauri\target"
             Get-ChildItem -Path "src-tauri\target" -Recurse -Filter "*.msi" | Write-Host
