@@ -398,6 +398,15 @@ const platformHandlers = {
   darwin: async (config) => {
     await ensureIconExists(config.iconPath, config.defaultIcon, "macOS icon");
 
+    // Ensure tray PNG used by Tauri is a valid RGBA image
+    const trayPngPath = `src-tauri/png/${process.env.NAME}_512.png`;
+    await ensureIconExists(
+      trayPngPath,
+      "src-tauri/png/icon_512.png",
+      "macOS tray icon PNG",
+      true,
+    );
+
     // Generate additional macOS icon sizes if needed
     const macosIcons = [
       "src-tauri/png/icon_128.png",
